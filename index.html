@@ -252,8 +252,8 @@
         // === 微軟驗證與 Graph API 配置資訊 ===
         const msalConfig = {
             auth: {
-                clientId: "8e9fb20e-e752-4ff8-a72c-a8a989b3ca91", // 👈【請在此處貼上微軟後台的用戶端ID，注意雙引號要留著】
-                authority: "https://login.microsoftonline.com/3e94ccc2-1343-416a-84fc-b26340a644f5", // 👈【請在此處貼上微軟後台的租戶ID】
+                clientId: "8e9fb20e-e752-4ff8-a72c-a8a989b3ca91", // 👈【請在此貼上您的用戶端ID】
+                authority: "https://login.microsoftonline.com/3e94ccc2-1343-416a-84fc-b26340a644f5", // 👈【請在此貼上您的租戶ID】
                 redirectUri: "https://tw277711.github.io/lifong-order/"
             },
             cache: {
@@ -262,8 +262,8 @@
             }
         };
 
-        // 您的 Microsoft List API 請求路徑
-        const graphEndpoint = "const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoint.com,6f15fcc8-2fa3-45b0-9846-79a82d5504ab,9720d241-2a8b-4658-8f1d-635597154415/lists/7b93829c-ff93-41d0-949b-ae1ba8ca4196/items?expand=fields(select=Title,工令號,交貨日期,進度,盤管製作,鍋爐規格型號)";
+        // 您的 Microsoft List API 絕對直達路徑 (已整合您查詢到的 Site ID 與 List ID)
+        const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoint.com,6f15fcc8-2fa3-45b0-9846-79a82d5504ab,9720d241-2a8b-4658-8f1d-635597154415/lists/7b93829c-ff93-41d0-949b-ae1ba8ca4196/items?expand=fields(select=Title,工令號,交貨日期,進度,盤管製作,鍋爐規格型號)";
         const loginRequest = { scopes: ["Sites.Read.All"] };
 
         const myMSALObj = new msal.PublicClientApplication(msalConfig);
