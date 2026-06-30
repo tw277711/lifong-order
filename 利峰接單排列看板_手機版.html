@@ -273,8 +273,8 @@
 
         // 您的 Microsoft List API 請求路徑
         // 根據您的截圖：https://22487603.sharepoint.com/sites/msteams_218d12
-        // 清單名稱為 List5
-        const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoint.com:/sites/msteams_218d12:/lists/List5/items?expand=fields(select=Title,工令號,鍋爐規格_x002f_型號,交貨日期,盤管製作,完成率,進度)";
+        // 清單名稱為 利峰接單排列
+        const graphEndpoint = "const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoint.com:/sites/msteams_218d12:/lists/List5/items?expand=fields(select=Title,工令號,交貨日期,進度,盤管製作,鍋爐規格型號)";";
         const loginRequest = { scopes: ["Sites.Read.All"] };
 
         const myMSALObj = new msal.PublicClientApplication(msalConfig);
