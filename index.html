@@ -272,19 +272,25 @@
         let currentStatus = "進行中";
         const statusList = ["進行中", "未開始", "完成待出貨", "已交貨", "等候通知", "預估訂單"];
 
-        window.addEventListener('load', async () => {
-            const currentAccounts = myMSALObj.getAllAccounts();
-            if (currentAccounts.length > 0) {
-                updateUserPanel(currentAccounts[0].username);
-                fetchListData();
-            }
-        });
+window.addEventListener('load', async () => {
+    try {
+        // 【關鍵補強】處理重導向登入回來後的資料接收
+        await myMSALObj.handleRedirectPromise();
+        
+        const currentAccounts = myMSALObj.getAllAccounts();
+        if (currentAccounts.length > 0) {
+            updateUserPanel(currentAccounts[0].username);
+            fetchListData();
+        }
+    } catch (error) {
+        console.error("處理重導向驗證失敗", error);
+    }
+});
 
         async function login() {
             try {
-                const response = await myMSALObj.loginPopup(loginRequest);
-                updateUserPanel(response.account.username);
-                fetchListData();
+                // 將原本的 loginPopup 改為更適合手機的 loginRedirect
+                await myMSALObj.loginRedirect(loginRequest);
             } catch (error) {
                 console.error("登入失敗", error);
                 alert("登入失敗: " + error.message);
