@@ -317,27 +317,29 @@
 rawListData = data.value.map(item => {
     const fields = item.fields || {};
     
-    // 1. [標題] 欄位（對應顯示：客戶名稱/交貨地點）
-    // 微軟 Lists 的主標題欄位不論畫面上改什麼名字，後台一律認 "Title"
-    const customerName = fields.Title || fields['客戶名稱_x002f_交貨地點'] || "未命名客戶";
+    // 1. [客戶名稱/交貨地點] -> 後台固定為 Title
+    const customerName = fields.Title || "未命名客戶";
 
-    // 2. [工令號] 欄位
-    const orderNo = fields['工令號'] || "無工令號";
+    // 2. [工令號] -> 後台代碼為 _x5de5__x4ec4__x865f_
+    const orderNo = fields['_x5de5__x4ec4__x865f_'] || "無工令號";
 
-    // 3. [鍋爐規格/型號] 欄位
-    // 斜線 / 在微軟後台標準轉碼為 _x002f_
-    const specModel = fields['鍋爐規格_x002f_型號'] || fields['鍋爐規格型號'] || "未註明"; 
+    // 3. [鍋爐規格/型號] -> 後台代碼為 _x934b__x7210__x898f__x683c__x002f__x5e36_ 或簡短版
+    // 由於微軟字數限制，我們同時盲測完整轉碼與你畫面上看到的切斷版
+    const specModel = fields['_x934b__x7210__x898f__x683c__x002f__x5e36_'] || 
+                        fields['_x934b__x7210__x898f__x683c__x'] || 
+                        "未註明";
 
-    // 4. [交貨日期] 欄位
-    const deliveryDate = fields['交貨日期'] ? fields['交貨日期'].split('T')[0] : "未定";
+    // 4. [交貨日期] -> 後台代碼為 OData__xff08__x4ea4__x8ca8__x65e5_
+    const deliveryDate = fields['OData__xff08__x4ea4__x8ca8__x65e5_'] ? 
+                           fields['OData__xff08__x4ea4__x8ca8__x65e5_'].split('T')[0] : "未定";
 
-    // 5. [進度] 欄位（負責頁籤分類）
-    const progressStatus = fields['進度'] || "未開始";
+    // 5. [進度] -> 後台代碼為 _x903b__x5ea6_ （負責頁籤分類）
+    const progressStatus = fields['_x903b__x5ea6_'] || "未開始";
 
-    // 6. [盤管製作] 欄位（保留原有的看板狀態燈功能）
-    const coilStatus = fields['盤管製作'] || "無";
+    // 6. [盤管製作] -> 如果沒改過應該是中文或你可以保留盲測
+    const coilStatus = fields['盤管製作'] || fields['盤管'] || "無";
 
-    // 7. [完成率] 欄位
+    // 7. [完成率] -> 依此類推
     const completionRate = fields['完成率'] ? Math.round(fields['完成率'] * 100) + "%" : "0%";
 
     return {
