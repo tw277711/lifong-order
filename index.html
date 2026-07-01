@@ -320,34 +320,43 @@
                     return title && title.trim() !== "";
                 });
 
-                rawListData = validItems.map(item => {
-                    const fields = item.fields || {};
-                    
-                    const rawDate = fields['OData__xff08__x4ea4__x8ca8__x65e5_'];
-                    const deliveryDate = (rawDate && typeof rawDate === 'string') ? rawDate.split('T')[0] : "未定";
+rawListData = validItems.map(item => {
+    const fields = item.fields || {};
+    
+    // 1. [交貨日期] 全相容盲測（防閃退）
+    const rawDate = fields['交貨日期'] || fields['OData__xff08__x4ea4__x8ca8__x65e5_'] || fields['_x4ea4__x8ca8__x65e5__x671f_'];
+    const deliveryDate = (rawDate && typeof rawDate === 'string') ? rawDate.split('T')[0] : "未定";
 
-                    const orderNo = fields['_x5de5__x4ec4__x865f_'] || "無工令號";
-                    const specModel = fields['_x0031_23'] || fields['鍋爐規格_x002f_型號'] || "未註明"; 
-                    const coilStatus = fields['_x76e4__x7ba1__x88fd__x4f5c_'] || "無";
-                    const progressStatus = fields['_x9032__x5ea6_'] || "未開始" ;
+    // 2. [工令號] 盲測
+    const orderNo = fields['工令號'] || fields['_x5de5__x4ec4__x865f_'] || fields['_x5de5__x4ee4__x865f_'] || "無工令號";
 
-                    let completionRate = "0%";
-                    const rawRate = fields['_x5b8c__x6210__x7387_'] || fields['完成率'];
-                    if (rawRate !== undefined && rawRate !== null) {
-                        completionRate = Math.round(Number(rawRate) * 100) + "%";
-                    }
-   
-                    return {
-                        id: item.id,
-                        客戶名稱: fields.Title, 
-                        工令號: orderNo,
-                        規格型號: specModel, 
-                        交貨日期: deliveryDate,
-                        盤管製作: coilStatus,
-                        完成率: completionRate,
-                        進度: progressStatus 
-                    };
-                });
+    // 3. [鍋爐規格/型號] 盲測
+    const specModel = fields['鍋爐規格_x002f_型號'] || fields['鍋爐規格型號'] || fields['_x0031_23'] || "未註明"; 
+
+    // 4. [進度] 盲測
+    const progressStatus = fields['進度'] || fields['_x903b__x5ea6_'] || fields['_x9032__x5ea6_'] || "未開始" ;
+
+    // 5. [盤管製作] 盲測
+    const coilStatus = fields['盤管製作'] || fields['_x76e4__x7ba1__x88fd__x4f5c_'] || "無";
+
+    // 6. [完成率] 
+    let completionRate = "0%";
+    const rawRate = fields['完成率'] || fields['_x5b8c__x6210__x7387_'];
+    if (rawRate !== undefined && rawRate !== null) {
+        completionRate = Math.round(Number(rawRate) * 100) + "%";
+    }
+
+    return {
+        id: item.id,
+        客戶名稱: fields.Title || "未命名客戶", 
+        工令號: orderNo,
+        規格型號: specModel, 
+        交貨日期: deliveryDate,
+        盤管製作: coilStatus,
+        完成率: completionRate,
+        進度: progressStatus 
+    };
+});
 
                 // 🔹 修改處：讓資料依 [交貨日期] 由近到遠排序，"未定" 的排到最後面
                 rawListData.sort((a, b) => {
