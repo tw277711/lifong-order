@@ -313,6 +313,13 @@
                 
                 const data = await response.json();
                 
+
+                // 🔹 修改處：過濾掉 Title 為空白的資料，並精準處理日期排序
+                const validItems = data.value.filter(item => {
+                    const title = item.fields?.Title;
+                    return title && title.trim() !== "";
+                
+                
                 rawListData = data.value.map(item => {
                     const fields = item.fields;
                     return {
@@ -327,6 +334,16 @@
                     };
                 });
 
+                    
+                    // 🔹 修改處：讓資料依 [交貨日期] 由近到遠排序，"未定" 的排到最後面
+                rawListData.sort((a, b) => {
+                    if (a.交貨日期 === "未定" && b.交貨日期 === "未定") return 0;
+                    if (a.交貨日期 === "未定") return 1;
+                    if (b.交貨日期 === "未定") return -1;
+                    return new Date(a.交貨日期) - new Date(b.交貨日期);
+                });
+
+                    
                 renderTabs();
                 renderKanban();
 
