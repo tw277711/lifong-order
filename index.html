@@ -264,9 +264,7 @@
 
         // 您的 Microsoft List API 絕對直達路徑 (已整合您查詢到的 Site ID 與 List ID)
         // 修正後的直達路徑格式
-        // 請將第 52 行替換為此行，確保有撈出 fields 資料
-        // 修正後的直達路徑格式
-const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoint.com:/sites/msteams_218d12:/lists/List5/items?expand=fields";
+const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoint.com:/sites/msteams_218d12:/lists/利峰接單排列/items?expand=fields";
         const loginRequest = { scopes: ["Sites.Read.All"] };
 
         const myMSALObj = new msal.PublicClientApplication(msalConfig);
@@ -315,45 +313,19 @@ const graphEndpoint = "https://graph.microsoft.com/v1.0/sites/22487603.sharepoin
                 
                 const data = await response.json();
                 
-rawListData = data.value.map(item => {
-    const fields = item.fields || {};
-    
-    // 1. [客戶名稱/交貨地點] -> 後台固定為 Title
-    const customerName = fields.Title || "未命名客戶";
-
-    // 2. [工令號] -> 後台代碼為 _x5de5__x4ec4__x865f_
-    const orderNo = fields['_x5de5__x4ec4__x865f_'] || "無工令號";
-
-    // 3. [鍋爐規格/型號] -> 後台代碼為 _x934b__x7210__x898f__x683c__x002f__x5e36_ 或簡短版
-    // 由於微軟字數限制，我們同時盲測完整轉碼與你畫面上看到的切斷版
-    const specModel = fields['_x934b__x7210__x898f__x683c__x002f__x5e36_'] || 
-                        fields['_x934b__x7210__x898f__x683c__x'] || 
-                        "未註明";
-
-    // 4. [交貨日期] -> 後台代碼為 OData__xff08__x4ea4__x8ca8__x65e5_
-    const deliveryDate = fields['OData__xff08__x4ea4__x8ca8__x65e5_'] ? 
-                           fields['OData__xff08__x4ea4__x8ca8__x65e5_'].split('T')[0] : "未定";
-
-    // 5. [進度] -> 後台代碼為 _x903b__x5ea6_ （負責頁籤分類）
-    const progressStatus = fields['_x903b__x5ea6_'] || "未開始";
-
-    // 6. [盤管製作] -> 如果沒改過應該是中文或你可以保留盲測
-    const coilStatus = fields['盤管製作'] || fields['盤管'] || "無";
-
-    // 7. [完成率] -> 依此類推
-    const completionRate = fields['完成率'] ? Math.round(fields['完成率'] * 100) + "%" : "0%";
-
-    return {
-        id: item.id,
-        客戶名稱: customerName, 
-        工令號: orderNo,
-        規格型號: specModel, 
-        交貨日期: deliveryDate,
-        盤管製作: coilStatus,
-        完成率: completionRate,
-        進度: progressStatus 
-    };
-});
+                rawListData = data.value.map(item => {
+                    const fields = item.fields;
+                    return {
+                        id: item.id,
+                        客戶名稱: fields.Title || "未命名客戶", 
+                        工令號: fields.工令號 || "無工令號",
+                        規格型號: fields.鍋爐規格型號 || fields.鍋爐規格_x002f_型號 || "未註明", 
+                        交貨日期: fields.交貨日期 ? fields.交貨日期.split('T')[0] : "未定",
+                        盤管製作: fields.盤管製作 || "無",
+                        完成率: fields.完成率 ? Math.round(fields.完成率 * 100) + "%" : fields.完成率 || "0%",
+                        進度: fields.進度 || "未開始" 
+                    };
+                });
 
                 renderTabs();
                 renderKanban();
