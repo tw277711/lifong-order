@@ -319,7 +319,7 @@
                         id: item.id,
                         客戶名稱: fields.Title || "未命名客戶", 
                         工令號: fields.工令號 || "無工令號",
-                        規格型號: fields.鍋爐規格/型號 || fields.鍋爐規格_x002f_型號 || "未註明", 
+                        規格型號: fields['鍋爐規格_x002f_型號'] || fields['鍋爐規格型號'] || "未註明", 
                         交貨日期: fields.交貨日期 ? fields.交貨日期.split('T')[0] : "未定",
                         盤管製作: fields.盤管製作 || "無",
                         完成率: fields.完成率 ? Math.round(fields.完成率 * 100) + "%" : fields.完成率 || "0%",
